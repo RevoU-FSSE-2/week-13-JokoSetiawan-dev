@@ -11,7 +11,7 @@ function App() {
           path="/"
           element={
             <MainLayout>
-              <HomePage />
+              <HomePage data={[]} />
             </MainLayout>
           }
         />

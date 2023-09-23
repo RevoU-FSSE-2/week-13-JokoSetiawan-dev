@@ -1,5 +1,6 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
 interface LoginValue {
@@ -19,8 +20,31 @@ const LoginSchema = Yup.object().shape({
 });
 
 const LoginPage: React.FC = () => {
-  const handleLogin = (values: LoginValue) => {
-    console.log(values);
+  const navigate = useNavigate();
+
+  const handleLogin = async (values: LoginValue) => {
+    const apiUrl = "https://mock-api.arikmpt.com/api/user/login";
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        const token = data.data.token;
+        localStorage.setItem("authToken", token);
+        navigate("/");
+      } else {
+        alert(data.errors);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -65,18 +89,19 @@ const LoginPage: React.FC = () => {
                 <ErrorMessage name="password" />
               </div>
               <div className="d-grid gap-2">
-                <button className="btn btn-primary" type="button">
+                <button className="btn btn-primary" type="submit">
                   Login
                 </button>
-                <a
-                  onClick={() => window.location.href = '/register'}
-                  className="btn active"
-                  role="button"
-                  data-bs-toggle="button"
-                  aria-pressed="true"
-                >
-                  Or Register Here
-                </a>
+                <button className="btn active">
+                  <Link
+                    className="nav-link"
+                    to="/register"
+                    role="button"
+                    aria-pressed="true"
+                  >
+                    Or Register Here
+                  </Link>
+                </button>
               </div>
             </Form>
           </Formik>

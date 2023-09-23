@@ -1,5 +1,6 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import {Link, useNavigate} from 'react-router-dom'
 import * as Yup from "yup";
 
 interface RegisterValue {
@@ -21,8 +22,33 @@ const RegisterSchema = Yup.object().shape({
 });
 
 const RegisterPage: React.FC = () => {
-  const handleRegister = (values: RegisterValue) => {
-    console.log(values);
+  const navigate = useNavigate()
+
+  const handleRegister = async (values: RegisterValue) => {
+
+    const apiUrl = 'https://mock-api.arikmpt.com/api/user/register'
+
+    try {
+      const response = await fetch (apiUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      }) 
+      
+      const data = await response.json()
+
+      if(response.ok){
+        localStorage.setItem('registerData', data)
+        navigate("/login")
+      }else{
+        alert(data.errors)
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -80,18 +106,19 @@ const RegisterPage: React.FC = () => {
                 <ErrorMessage name="password" />
               </div>
               <div className="d-grid gap-2">
-                <button className="btn btn-primary" type="button">
+                <button className="btn btn-primary" type="submit">
                   Register
                 </button>
-                <a
-                  onClick={() => window.location.href = '/login'}
-                  className="btn active"
+                <button className="btn active">
+                <Link
+                  className="nav-link"
+                  to="/login"
                   role="button"
-                  data-bs-toggle="button"
                   aria-pressed="true"
                 >
                   Or Login Here
-                </a>
+                </Link>
+                </button>
               </div>
             </Form>
           </Formik>
