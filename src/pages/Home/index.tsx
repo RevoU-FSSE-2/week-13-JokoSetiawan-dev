@@ -25,7 +25,7 @@ const HomePage: React.FC<DataTableProps> = () => {
             })
             const data = await response.json()
             setData(data.data)
-            console.log(data.data);
+            console.log(data.current_page);
             
         } catch (error) {
             console.log(error);
@@ -34,9 +34,11 @@ const HomePage: React.FC<DataTableProps> = () => {
 
     useEffect(() => {
         fetchData()
-    }, [])
+    }, []);
+    
 
   return (
+    
     <div className={`container pt-4 ${styles.homeContainer}`}>
 
       <table className="table">
