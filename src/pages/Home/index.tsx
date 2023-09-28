@@ -14,7 +14,7 @@ interface DataTableProps {
 }
 
 const HomePage: React.FC<DataTableProps> = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [data, setData] = useState<IDataItem[]>([]);
 
   const fetchData = async () => {
@@ -35,10 +35,32 @@ const HomePage: React.FC<DataTableProps> = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if(!token) navigate('/login')
+    const token = localStorage.getItem("authToken");
+    if (!token) navigate("/login");
     fetchData();
   }, []);
+
+  const handleDeleteCategory = async (id: string) => {
+    const apiUrl = `https://mock-api.arikmpt.com/api/category/${id}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
+
+      if (response.ok) {
+        // Refresh the data after deleting if needed.
+        fetchData();
+      } else {
+        console.log("Failed to delete category.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className={`container pt-4 ${styles.homeContainer}`}>
@@ -52,22 +74,35 @@ const HomePage: React.FC<DataTableProps> = () => {
           </tr>
         </thead>
         <tbody>
-          {data.map((data) => (
-            <tr key={data.id}>
-              <td>{data.id}</td>
-              <td>{data.name}</td>
-              <td>{data.isActive ? "Active" : "Deactive"}</td>
+          {data.map((dataItem) => (
+            <tr key={dataItem.id}>
+              <td>{dataItem.id}</td>
+              <td>{dataItem.name}</td>
+              <td>{dataItem.isActive ? "Active" : "Deactive"}</td>
               <td>
-                <button className="btn btn-secondary" onClick={() => navigate(`/category/update/${data.id}`)}>Edit</button>
-                </td>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => navigate(`/category/update/${dataItem.id}`)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleDeleteCategory(dataItem.id)}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
       <div>
-        <AddDataButton onClick={function (): void {
-          throw new Error("Function not implemented.");
-        } } />
+        <AddDataButton
+          onClick={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
       </div>
     </div>
   );

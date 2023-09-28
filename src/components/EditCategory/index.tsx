@@ -63,6 +63,7 @@ const EditCategory: React.FC = () => {
     }
   };
 
+
   return (
     <div
       className="row justify-content-center align-items-center"
