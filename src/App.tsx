@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { HomePage, RegisterPage, LoginPage } from "../src/pages";
 import { MainLayout } from "./layout";
+import { NewCategory, EditCategory } from "./components";
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
         />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/newcategory" element={<NewCategory />} />
+        <Route path="/category/update/:id" element={<EditCategory />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./home.module.css";
+import { useNavigate } from "react-router-dom";
+import { AddDataButton } from "../../components";
 
 interface IDataItem {
   id: string;
@@ -12,6 +14,7 @@ interface DataTableProps {
 }
 
 const HomePage: React.FC<DataTableProps> = () => {
+  const navigate = useNavigate()
   const [data, setData] = useState<IDataItem[]>([]);
 
   const fetchData = async () => {
@@ -32,6 +35,8 @@ const HomePage: React.FC<DataTableProps> = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if(!token) navigate('/login')
     fetchData();
   }, []);
 
@@ -52,11 +57,18 @@ const HomePage: React.FC<DataTableProps> = () => {
               <td>{data.id}</td>
               <td>{data.name}</td>
               <td>{data.isActive ? "Active" : "Deactive"}</td>
-              <td></td>
+              <td>
+                <button className="btn btn-secondary" onClick={() => navigate(`/category/update/${data.id}`)}>Edit</button>
+                </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <div>
+        <AddDataButton onClick={function (): void {
+          throw new Error("Function not implemented.");
+        } } />
+      </div>
     </div>
   );
 };

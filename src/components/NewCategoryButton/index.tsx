@@ -1,12 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface AddDataButtonProps {
-  onAddData: () => void;
+  onClick: () => void;
 }
 
-const AddDataButton: React.FC<AddDataButtonProps> = ({ onAddData }) => {
+const AddDataButton: React.FC<AddDataButtonProps> = ({ }) => {
+  const navigate = useNavigate()
+  const handleAdd = () => {
+    navigate('/newcategory')
+  }
   return (
-    <button className='btn btn-primary' onClick={onAddData}>Add New Data</button>
+    <button className='btn btn-primary' onClick={handleAdd}>Add New Data</button>
   );
 }
 

@@ -1,7 +1,14 @@
 import React from "react";
 import {Link} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    localStorage.removeItem('authToken')
+    navigate('/login')
+  }
+
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container">
@@ -30,6 +37,9 @@ const Navbar: React.FC = () => {
             <Link className="nav-link" to="/login">
               Login
             </Link>
+            <button className="nav-link" onClick={handleLogout}>
+              Logout
+            </button>
           </div>
         </div>
       </div>
