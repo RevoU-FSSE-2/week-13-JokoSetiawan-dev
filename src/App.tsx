@@ -20,7 +20,6 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/newcategory" element={<NewCategory />} />
         <Route path="/category/update" element={<EditCategory />} />
-        <Route path="/" element={<EditCategory />} />
       </Routes>
     </BrowserRouter>
   );

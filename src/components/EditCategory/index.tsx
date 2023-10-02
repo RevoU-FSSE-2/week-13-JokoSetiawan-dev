@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 
 interface CategoryValue {
+  id: string;
   name: string;
   isActive: boolean;
 }
@@ -14,9 +15,10 @@ const CategorySchema = Yup.object().shape({
 
 const EditCategory: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Assuming you have a route parameter for the category ID.
+  const { id } = useParams();
 
   const [initialValues, setInitialValues] = useState<CategoryValue>({
+    id: "",
     name: "",
     isActive: false,
   });
@@ -33,7 +35,7 @@ const EditCategory: React.FC = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setInitialValues({ name: data.name, isActive: data.isActive});
+        setInitialValues({ id: data.id ,name: data.name, isActive: data.isActive});
       })
       .catch((error) => {
         console.log(error);
@@ -75,6 +77,18 @@ const EditCategory: React.FC = () => {
         onSubmit={handleEditCategory}
       >
         <Form>
+          <div className="mb-3">
+            <label htmlFor="exampleInputName" className="form-label">
+              Id
+            </label>
+            <Field
+              name="id"
+              type="id"
+              className="form-control"
+              id="exampleInputId"
+            />
+            <ErrorMessage name="id" />
+          </div>
           <div className="mb-3">
             <label htmlFor="exampleInputName" className="form-label">
               Name
