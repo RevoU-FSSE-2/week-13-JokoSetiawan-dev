@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 
 interface CategoryValue {
-  id: string;
   name: string;
   isActive: boolean;
 }
@@ -18,13 +17,11 @@ const EditCategory: React.FC = () => {
   const { id } = useParams();
 
   const [initialValues, setInitialValues] = useState<CategoryValue>({
-    id: "",
     name: "",
     isActive: false,
   });
 
   useEffect(() => {
-    // Fetch the existing category data using categoryId and populate initialValues.
     const apiUrl = `https://mock-api.arikmpt.com/api/category/${id}`;
 
     fetch(apiUrl, {
@@ -35,7 +32,7 @@ const EditCategory: React.FC = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setInitialValues({ id: data.id ,name: data.name, isActive: data.isActive});
+        setInitialValues({ name: data.name, isActive: data.isActive});
       })
       .catch((error) => {
         console.log(error);
@@ -47,7 +44,7 @@ const EditCategory: React.FC = () => {
 
     try {
       const response = await fetch(apiUrl, {
-        method: "PUT", // Use PUT or PATCH for updating data.
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           "content-type": "application/json",
@@ -79,18 +76,6 @@ const EditCategory: React.FC = () => {
         <Form>
           <div className="mb-3">
             <label htmlFor="exampleInputName" className="form-label">
-              Id
-            </label>
-            <Field
-              name="id"
-              type="id"
-              className="form-control"
-              id="exampleInputId"
-            />
-            <ErrorMessage name="id" />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="exampleInputName" className="form-label">
               Name
             </label>
             <Field
@@ -107,14 +92,13 @@ const EditCategory: React.FC = () => {
             </label>
             <Field
               name="isActive"
-              type="isActive"
-              className="form-control"
+              className="form-select"
               id="exampleInputName"
             />
             <ErrorMessage name="isActive" />
           </div>
           <div className="d-grid gap-2">
-            <button className="btn btn-primary" type="submit">
+            <button className="btn btn-primary" type="submit" >
               Update
             </button>
           </div>
