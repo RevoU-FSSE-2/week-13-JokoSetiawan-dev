@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { UseLocalStorageSet } from "../../hook";
 
 interface LoginValue {
   email: string;
@@ -37,7 +38,8 @@ const LoginPage: React.FC = () => {
 
       if (response.ok) {
         const token = data.data.token;
-        localStorage.setItem("authToken", token);
+        const setLocalStorage = UseLocalStorageSet()
+        setLocalStorage("authToken", token);
         navigate("/");
       } else {
         alert(data.errors);

@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import {Link, useNavigate} from 'react-router-dom'
 import * as Yup from "yup";
+import { UseLocalStorageSet } from "../../hook";
 
 interface RegisterValue {
   name: string;
@@ -40,7 +41,8 @@ const RegisterPage: React.FC = () => {
       const data = await response.json()
 
       if(response.ok){
-        localStorage.setItem('registerData', data)
+        const setLocalStorage = UseLocalStorageSet()
+        setLocalStorage('registerData', data)
         navigate("/login")
       }else{
         alert(data.errors)

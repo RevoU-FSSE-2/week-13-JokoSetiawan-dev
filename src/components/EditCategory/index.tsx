@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
+import { UseLocalStorageGet } from "../../hook";
 
 interface CategoryValue {
   name: string;
-  isActive: boolean;
+  isActive: string;
 }
 
 const CategorySchema = Yup.object().shape({
@@ -18,16 +19,16 @@ const EditCategory: React.FC = () => {
 
   const [initialValues, setInitialValues] = useState<CategoryValue>({
     name: "",
-    isActive: false,
+    isActive: "",
   });
 
   useEffect(() => {
-    const apiUrl = `https://mock-api.arikmpt.com/api/category/${id}`;
+    const apiUrl = `https://mock-api.arikmpt.com/api/category`;
 
     fetch(apiUrl, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        Authorization: `Bearer ${UseLocalStorageGet("authToken", "")}`,
       },
     })
       .then((response) => response.json())
@@ -40,7 +41,7 @@ const EditCategory: React.FC = () => {
   }, [id]);
 
   const handleEditCategory = async (values: CategoryValue) => {
-    const apiUrl = `https://mock-api.arikmpt.com/api/category/update/${id}`;
+    const apiUrl = `https://mock-api.arikmpt.com/api/category`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -91,10 +92,14 @@ const EditCategory: React.FC = () => {
               Status
             </label>
             <Field
+              as="select"
               name="isActive"
               className="form-select"
-              id="exampleInputName"
-            />
+              id="exampleInputStatus"
+            >
+              <option value="true">Active</option>
+              <option value="false">Deactive</option>
+            </Field>
             <ErrorMessage name="isActive" />
           </div>
           <div className="d-grid gap-2">

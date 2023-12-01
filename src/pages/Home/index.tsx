@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./home.module.css";
 import { useNavigate } from "react-router-dom";
 import { AddDataButton } from "../../components";
+import {UseLocalStorageGet } from "../../hook";
 
 interface IDataItem {
   id: string;
@@ -35,7 +36,7 @@ const HomePage: React.FC<DataTableProps> = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    const token = UseLocalStorageGet("authToken", "");
     if (!token) navigate("/login");
     fetchData();
   }, []);
@@ -47,7 +48,7 @@ const HomePage: React.FC<DataTableProps> = () => {
       const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          Authorization: `Bearer ${UseLocalStorageGet("authToken", "")}`,
         },
       });
 

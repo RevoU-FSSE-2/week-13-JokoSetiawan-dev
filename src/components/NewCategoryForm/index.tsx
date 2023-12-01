@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { UseLocalStorageGet } from "../../hook";
 
 interface CategoryValue {
   name: string;
@@ -21,7 +22,7 @@ const NewCategory: React.FC = () => {
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          Authorization: `Bearer ${UseLocalStorageGet("authToken", "")}`,
           "content-type": "application/json",
         },
         body: JSON.stringify(values),
