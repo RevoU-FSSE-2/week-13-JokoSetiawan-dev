@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./home.module.css";
 import { useNavigate } from "react-router-dom";
 import { AddDataButton } from "../../components";
-import {UseLocalStorageGet } from "../../hook";
+import { useAuthToken } from "../../hook";
 
 interface IDataItem {
   id: string;
@@ -17,38 +17,48 @@ interface DataTableProps {
 const HomePage: React.FC<DataTableProps> = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<IDataItem[]>([]);
+  const [, , , getToken] = useAuthToken();
+  const dataFetched = useRef(false);
 
   const fetchData = async () => {
-    const apiUrl = "https://mock-api.arikmpt.com/api/category";
     try {
+      const apiUrl = "https://mock-api.arikmpt.com/api/category";
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
-      const data = await response.json();
-      setData(data.data);
-      console.log(data.data);
+      const responseData = await response.json();
+
+      if (response.ok) {
+        setData(responseData.data);
+        console.log(responseData.data);
+      } else {
+        console.log("Failed to fetch data.");
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    const token = UseLocalStorageGet("authToken", "");
-    if (!token) navigate("/login");
-    fetchData();
-  }, []);
+    // Fetch data only if a token is available and it hasn't been fetched already
+    if (getToken() && !dataFetched.current) {
+      fetchData();
+      dataFetched.current = true;
+    } else if (!getToken()) {
+      navigate("/login");
+    }
+  }, [getToken, navigate]);
 
   const handleDeleteCategory = async (id: string) => {
-    const apiUrl = `https://mock-api.arikmpt.com/api/category/${id}`;
-
     try {
+      const apiUrl = `https://mock-api.arikmpt.com/api/category/${id}`;
       const response = await fetch(apiUrl, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${UseLocalStorageGet("authToken", "")}`,
+          Authorization: `Bearer ${getToken()}`,
         },
       });
 
@@ -83,7 +93,7 @@ const HomePage: React.FC<DataTableProps> = () => {
               <td>
                 <button
                   className="btn btn-secondary"
-                  onClick={() => navigate(`/category/update/${dataItem.id}`)}
+                  onClick={() => navigate(`/category/update`)}
                 >
                   Edit
                 </button>
@@ -100,8 +110,8 @@ const HomePage: React.FC<DataTableProps> = () => {
       </table>
       <div>
         <AddDataButton
-          onClick={function (): void {
-            throw new Error("Function not implemented.");
+          onClick={() => {
+            // Handle click logic
           }}
         />
       </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { UseLocalStorageGet } from "../../hook";
+import { useAuthToken } from "../../hook";
 
 interface CategoryValue {
   name: string;
@@ -14,6 +14,7 @@ const CategorySchema = Yup.object().shape({
 
 const NewCategory: React.FC = () => {
   const navigate = useNavigate();
+  const [, , , getToken] = useAuthToken(); // Destructure getToken from useAuthToken hook
 
   const handleAddCategory = async (values: CategoryValue) => {
     const apiUrl = "https://mock-api.arikmpt.com/api/category/create";
@@ -22,14 +23,14 @@ const NewCategory: React.FC = () => {
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${UseLocalStorageGet("authToken", "")}`,
+          Authorization: `Bearer ${getToken()}`,
           "content-type": "application/json",
         },
         body: JSON.stringify(values),
       });
       const data = await response.json();
       console.log(data);
-      navigate('/')
+      navigate('/');
     } catch (error) {
       console.log(error);
     }

@@ -2,55 +2,80 @@ import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
-import { UseLocalStorageGet } from "../../hook";
+import { useAuthToken } from "../../hook";
 
 interface CategoryValue {
+  id: string;
   name: string;
-  isActive: string;
+  is_active: boolean;
 }
 
 const CategorySchema = Yup.object().shape({
+  id: Yup.string(),
   name: Yup.string().required("Input Category Name"),
+  is_active: Yup.boolean().required("Select Status"),
 });
 
 const EditCategory: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [, , , getToken] = useAuthToken();
 
   const [initialValues, setInitialValues] = useState<CategoryValue>({
+    id: "",
     name: "",
-    isActive: "",
+    is_active: false,
   });
 
   useEffect(() => {
-    const apiUrl = `https://mock-api.arikmpt.com/api/category`;
+    const fetchData = async () => {
+      try {
+        const apiUrl = `https://mock-api.arikmpt.com/api/category/${id}`;
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        });
+        const data = await response.json();
+        console.log(data.id);
+        
 
-    fetch(apiUrl, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${UseLocalStorageGet("authToken", "")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setInitialValues({ name: data.name, isActive: data.isActive});
-      })
-      .catch((error) => {
+        if (response.ok && data) {
+          setInitialValues({
+            id: data.id,
+            name: data.name,
+            is_active: data.isActive,
+          });
+        } else {
+          console.log("Failed to fetch category details.");
+        }
+      } catch (error) {
         console.log(error);
-      });
-  }, [id]);
+      }
+    };
+
+    fetchData();
+  }, [id, getToken]);
 
   const handleEditCategory = async (values: CategoryValue) => {
-    const apiUrl = `https://mock-api.arikmpt.com/api/category`;
-
     try {
+      console.log(values.id);
+      
+      const requestBody = {
+        id: values.id,
+        name: values.name,
+        is_active: values.is_active,
+      };
+
+      const apiUrl = `https://mock-api.arikmpt.com/api/category/update`;
       const response = await fetch(apiUrl, {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          "content-type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
@@ -63,47 +88,47 @@ const EditCategory: React.FC = () => {
     }
   };
 
-
   return (
-    <div
-      className="row justify-content-center align-items-center"
-      style={{ minHeight: "100vh", maxWidth: "50vh" }}
-    >
+    <div className="row justify-content-center align-items-center" style={{ minHeight: "100vh", maxWidth: "50vh" }}>
       <Formik
         initialValues={initialValues}
         validationSchema={CategorySchema}
         onSubmit={handleEditCategory}
       >
         <Form>
+          {/* Hidden input for id */}
+          <Field type="hidden" name="id" value={initialValues.id} />
+
           <div className="mb-3">
             <label htmlFor="exampleInputName" className="form-label">
               Name
             </label>
             <Field
               name="name"
-              type="name"
+              type="text"
               className="form-control"
               id="exampleInputName"
             />
             <ErrorMessage name="name" />
           </div>
           <div className="mb-3">
-            <label htmlFor="exampleInputName" className="form-label">
+            <label htmlFor="exampleInputStatus" className="form-label">
               Status
             </label>
             <Field
               as="select"
-              name="isActive"
+              name="is_active"
               className="form-select"
               id="exampleInputStatus"
             >
+              <option value="">Select Status</option>
               <option value="true">Active</option>
               <option value="false">Deactive</option>
             </Field>
-            <ErrorMessage name="isActive" />
+            <ErrorMessage name="is_active" />
           </div>
           <div className="d-grid gap-2">
-            <button className="btn btn-primary" type="submit" >
+            <button className="btn btn-primary" type="submit">
               Update
             </button>
           </div>

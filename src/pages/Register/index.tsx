@@ -2,7 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import {Link, useNavigate} from 'react-router-dom'
 import * as Yup from "yup";
-import { UseLocalStorageSet } from "../../hook";
+import { useAuthToken } from "../../hook";
 
 interface RegisterValue {
   name: string;
@@ -23,31 +23,32 @@ const RegisterSchema = Yup.object().shape({
 });
 
 const RegisterPage: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [, saveToken] = useAuthToken(); // Only use the saveToken function
 
   const handleRegister = async (values: RegisterValue) => {
-
-    const apiUrl = 'https://mock-api.arikmpt.com/api/user/register'
+    const apiUrl = 'https://mock-api.arikmpt.com/api/user/register';
 
     try {
-      const response = await fetch (apiUrl, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify(values)
-      }) 
-      
-      const data = await response.json()
+        body: JSON.stringify(values),
+      });
 
-      if(response.ok){
-        const setLocalStorage = UseLocalStorageSet()
-        setLocalStorage('registerData', data)
-        navigate("/login")
-      }else{
-        alert(data.errors)
+      const data = await response.json();
+
+      if (response.ok) {
+        // Assuming the registration API returns a token
+        const token = data.data.token;
+        saveToken(token); // Use saveToken to handle the token
+        navigate('/login');
+      } else {
+        alert(data.errors);
       }
-      
     } catch (error) {
       console.log(error);
     }

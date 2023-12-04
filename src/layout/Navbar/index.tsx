@@ -1,13 +1,16 @@
 import React from "react";
 import {Link} from 'react-router-dom'
 import { useNavigate } from "react-router-dom";
+import { useAuthToken } from "../../hook";
 
 const Navbar: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [, , removeToken] = useAuthToken(); // Destructure removeToken
+
   const handleLogout = () => {
-    localStorage.removeItem('authToken')
-    navigate('/login')
-  }
+    removeToken(); // Use removeToken from the useAuthToken hook
+    navigate('/login');
+  };
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">

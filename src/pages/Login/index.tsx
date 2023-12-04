@@ -2,7 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { UseLocalStorageSet } from "../../hook";
+import { useAuthToken } from "../../hook";
 
 interface LoginValue {
   email: string;
@@ -22,6 +22,7 @@ const LoginSchema = Yup.object().shape({
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const [, saveToken] = useAuthToken();
 
   const handleLogin = async (values: LoginValue) => {
     const apiUrl = "https://mock-api.arikmpt.com/api/user/login";
@@ -38,8 +39,7 @@ const LoginPage: React.FC = () => {
 
       if (response.ok) {
         const token = data.data.token;
-        const setLocalStorage = UseLocalStorageSet()
-        setLocalStorage("authToken", token);
+        saveToken(token);
         navigate("/");
       } else {
         alert(data.errors);

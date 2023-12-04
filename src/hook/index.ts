@@ -1,2 +1,1 @@
-export { default as UseLocalStorageSet } from './LocalStorageSet'
-export { default as UseLocalStorageGet } from './LocalStorageGet'
+export { default as useAuthToken } from './TokenLocalStorage'
